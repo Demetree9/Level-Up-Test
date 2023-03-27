@@ -1,0 +1,147 @@
+package levelsystem;
+
+import java.util.Random;
+import java.lang.Math;
+import java.util.Scanner;
+
+public class LevelSystem {
+
+    //Variable Init:
+    String playerName;
+    double healthTotal;
+    int ac;
+    int currentLevel;
+    int experience;
+    int goldAmount;
+    double stagnantHealth;
+
+    LevelSystem(String username, int hitpoints, int armourclass, int level, int xp, int gold, int maxHealth) {
+
+        //Constructor:
+        this.playerName = username;
+        this.healthTotal = hitpoints;
+        this.ac = armourclass;
+        this.currentLevel = level;
+        this.experience = xp;
+        this.goldAmount = gold;
+        this.stagnantHealth = maxHealth;
+
+    }
+
+    //20 Sided Dice Roller:
+    public static int DiceRollerTwenty(int numberToRoll) {
+        Random roller = new Random();
+        int dTwenty = roller.nextInt(20);
+        for (int i = 1; i < numberToRoll; i++) {
+            dTwenty += roller.nextInt(20);
+        }
+        return dTwenty;
+    }
+
+    //Six Sided Dice Roller:
+    public static int DiceRollerSix(int numToRoll) {
+        Random diceSixRoll = new Random();
+        int diceSix = diceSixRoll.nextInt(6);
+        for (int i = 1; i < numToRoll; i++) {
+            diceSix += diceSix;
+        }
+        return diceSix;
+    }
+
+    public static void main(String[] args) {
+
+        //Player:
+        LevelSystem testDummy = new LevelSystem("Johnnathan", 20, 13, 1, 0, 0, 20);
+        Scanner keyboard = new Scanner(System.in);
+
+        System.out.println("Let's earn some XP! What would you like to do?");
+        int actionChoice = 0;
+        while (actionChoice != 4) {
+
+            //Main Block Start:
+            System.out.println("1. Pickpocket 2. Barder 3. Plunder 4. Exit (INPUT NUM)");
+            actionChoice = keyboard.nextInt();
+
+            if (actionChoice == 1) {
+                System.out.println("You attempt to pickpocket someone...");
+                int pickpocketRoll = DiceRollerTwenty(1);
+                if (pickpocketRoll >= 10) {
+                    System.out.println("You are successful and gain experience.");
+                    int xpGained = DiceRollerTwenty(5);
+                    System.out.println("You gained " + xpGained + " experience.");
+                    testDummy.experience += xpGained;
+                } else {
+                    System.out.println("You are not successful and get punched!");
+                    testDummy.healthTotal = testDummy.healthTotal - 2;
+                    System.out.println("Your health is now " + testDummy.healthTotal);
+                }
+            }
+            if (actionChoice == 2) {
+                System.out.println("You start to barder with a shopkeeper...");
+                int barderRoll = DiceRollerTwenty(1);
+                if (barderRoll >= 10) {
+                    System.out.println("You sell one of your items for a good profit.");
+                    int gainedGold = DiceRollerTwenty(2);
+                    System.out.println("You now have " + gainedGold + " gold");
+                    testDummy.goldAmount += gainedGold;
+                    int xpGained = DiceRollerTwenty(2);
+                    System.out.println("You gained " + xpGained + " experience.");
+                    testDummy.experience += xpGained;
+
+                } else if (barderRoll < 10) {
+                    System.out.println("You fail to strike a bargin.");
+                }
+            }
+            if (actionChoice == 3) {
+                System.out.println("You go on a plundering run...");
+                int pluderSuccess = DiceRollerTwenty(1);
+                if (pluderSuccess >= 10) {
+                    System.out.println("You steal some loot from a passing caravan.");
+                    int goldGained = DiceRollerTwenty(5);
+                    System.out.println("You gained " + goldGained + " gold.");
+                    testDummy.goldAmount += goldGained;
+                    int experienceGained = DiceRollerTwenty(5);
+                    System.out.println("You gained " + experienceGained + " experience.");
+                    testDummy.experience += experienceGained;
+
+                } else if (pluderSuccess < 10) {
+                    System.out.println("You get beat up as you attempt to rob a caravan.");
+                    int healthLost = DiceRollerSix(1);
+                    System.out.println("You lose " + healthLost + " health.");
+                    testDummy.healthTotal = testDummy.healthTotal - healthLost;
+
+                }
+
+            }
+
+            if (actionChoice == 4) {
+                break;
+            }
+
+            if (actionChoice != 1 && actionChoice != 2 && actionChoice != 3 && actionChoice != 4) {
+                System.out.println("Error!");
+                continue;
+            }
+
+            if (testDummy.healthTotal <= 0) {
+                System.out.println("Oh no, you're dead.");
+                break;
+            }
+
+            //Level Up:
+            if (testDummy.currentLevel * testDummy.currentLevel + 100 <= testDummy.experience) {
+                testDummy.currentLevel += 1;
+                System.out.println("You've leveled up! Your current level is now " + testDummy.currentLevel);
+                int experienceDifference = testDummy.experience - (testDummy.currentLevel * testDummy.currentLevel + 100);
+                testDummy.experience = experienceDifference;
+                testDummy.stagnantHealth = testDummy.stagnantHealth * 1.5;
+                testDummy.healthTotal = testDummy.healthTotal * 1.5;
+                Math.round(testDummy.stagnantHealth);
+                Math.round(testDummy.healthTotal);
+                System.out.println("Here's your new stats:");
+                System.out.println("Max Health: " + testDummy.stagnantHealth);
+
+            }
+        }
+    }
+}
